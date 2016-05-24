@@ -70,6 +70,9 @@ class CoachingGraph():
 
 		user.infect()
 
+	def infect(self):
+		random.choice(self.users).infect()
+		
 	def infect_limited(self, user, limit):
 		if not user in self.users: return
 
