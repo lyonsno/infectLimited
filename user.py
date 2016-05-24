@@ -3,6 +3,7 @@ class User():
 		self.coachees = []
 		self.coaches = []
 		self.infected = False
+		self.visited = False
 
 	def add_coach(self, user):
 		self.coaches.append(user)

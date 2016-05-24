@@ -22,13 +22,15 @@ class GraphVisualizer():
 					self.visualGraph.add_edge(user, coachee, arrows=True)
 
 	def draw(self):
-		for n in self.visualGraph.edges(data=True):
-			print(n)
-		colorMap = {True:'#12e8b9', False:'black'}
-		pos = nx.spring_layout(self.visualGraph, scale=10, k=0.15, iterations=80)
+		# generate node positions
+		pos = nx.spring_layout(self.visualGraph, scale=10, k=0.1, iterations=120)
 
+		# draw edges with arrows
 		coachEdges = [(n[0], n[1]) for n in self.visualGraph.edges(data=True) if n[2]['arrows'] == True]
 		nx.draw_networkx_edges(self.visualGraph, pos, edgelist=coachEdges, arrows=True)
+
+		# draw rest of graph
+		colorMap = {True:'#12e8b9', False:'black'}
 		nx.draw(self.visualGraph, pos, arrows=False, node_color=[colorMap[self.visualGraph.node[node]['category']] for node in self.visualGraph], node_size=30)
 		plt.show()
 
@@ -51,7 +53,7 @@ g.start_coaching(C, D)
 g.start_coaching(B, D)
 g.start_coaching(E, D)
 
-g.init_semi_random(20)
+g.init_semi_random(40)
 g.infect()
 viz = GraphVisualizer(g)
 viz.process_graph()

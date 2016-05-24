@@ -1,16 +1,25 @@
 import random
 from user import User
+import graphTraverser
 
 class CoachingGraph():
 	def __init__(self):
 		self.users = []
 
-	def init_random(self, size):
+	def init_random(self, numUsers):
 		self.users = []
-		for i in range(size):
+		self.create_and_add_users(numUsers)
+		self.make_random_connections(3)
+
+	def create_and_add_users(self, numUsers):
+		for i in range(numUsers):
 			user = User()
 			self.add_user(user)
-		self.make_random_connections(3)
+
+	def make_random_connections(self, iterations):
+		for i in range(iterations):
+			for user in self.users:
+				self.make_random_connection(user)
 
 	def init_semi_random(self, size):
 		self.users = []
@@ -23,9 +32,11 @@ class CoachingGraph():
 		while remaining > 0:
 
 			numCoachees = random.randint(1, coacheesPerCoach * 2)
+			remaining -= 1
+
 			numCoachees = min(numCoachees, remaining)
 			self.add_coach(numCoachees)
-			remaining -= numCoachees + 1
+			remaining -= numCoachees
 
 		self.make_sparse_random_connections(size // 4)
 
@@ -34,13 +45,15 @@ class CoachingGraph():
 		self.add_user(coach)
 		self.add_coachees(coach, numCoachees)
 
+	def add_coachees(self, user, numToAdd):
+		if user not in self.users: return
+		for i in range(numToAdd):
+			coachee = User()
+			self.add_user(coachee)
+			self.create_coach_coachee_relationship(user, coachee)
+
 	def make_sparse_random_connections(self, numConnections):
 		for user in random.sample(self.users, numConnections):
-				self.make_random_connection(user)
-
-	def make_random_connections(self, iterations):
-		for i in range(iterations):
-			for user in self.users:
 				self.make_random_connection(user)
 
 	def make_random_connection(self, user):
@@ -48,31 +61,37 @@ class CoachingGraph():
 		while coachee == user:
 			coachee = random.choice(self.users)
 			if user.has_coachee(coachee): continue
-		self.start_coaching(user, coachee)
-
-	def add_coachees(self, user, numToAdd):
-		if user not in self.users: return
-		for i in range(numToAdd):
-			coachee = User()
-			self.add_user(coachee)
-			self.start_coaching(user, coachee)
+		self.create_coach_coachee_relationship(user, coachee)
 
 	def add_user(self, user):
+		if user in self.users: return
 		self.users.append(user)
 
-	def start_coaching(self, userA, userB):
+	def add_users(self, users):
+		for user in users:
+			self.add_user(user)
+
+	def create_coach_coachee_relationship(self, userA, userB):
 		if userA not in self.users or userB not in self.users: return
 		userA.add_coachee(userB)
 		userB.add_coach(userA)
 
-	def infect(self, user):
+	def get_all_connected_users(self, user):
+		return graphTraverser.get_connected_network(user)
+
+	# def is_path(self, userA, userB):
+
+	def get_subgraphs(self):
+			return graphTraverser.get_subgraphs(self.users)
+
+	def infect_user(self, user):
 		if not user in self.users: return
 
 		user.infect()
 
-	def infect(self):
+	def infect_random(self):
 		random.choice(self.users).infect()
-		
+
 	def infect_limited(self, user, limit):
 		if not user in self.users: return
 
