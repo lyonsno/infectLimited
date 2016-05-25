@@ -1,10 +1,12 @@
 import random
 from user import User
+from infecter import Infecter
 import graphTraverser
 
-class CoachingGraph():
+class CoachingGraph():	
 	def __init__(self):
 		self.users = []
+		self.infecter = Infecter()
 
 	def init_random(self, numUsers):
 		self.users = []
@@ -75,23 +77,4 @@ class CoachingGraph():
 		if userA not in self.users or userB not in self.users: return
 		userA.add_coachee(userB)
 		userB.add_coach(userA)
-
-	def get_all_connected_users(self, user):
-		return graphTraverser.get_connected_network(user)
-
-	# def is_path(self, userA, userB):
-
-	def get_subgraphs(self):
-			return graphTraverser.get_subgraphs(self.users)
-
-	def infect_user(self, user):
-		if not user in self.users: return
-
-		user.infect()
-
-	def infect_random(self):
-		random.choice(self.users).infect()
-
-	def infect_limited(self, user, limit):
-		if not user in self.users: return
 

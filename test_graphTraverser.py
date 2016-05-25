@@ -1,5 +1,6 @@
 import pytest
 
+from graphVisualizer import GraphVisualizer
 from user import User
 from coachingGraph import CoachingGraph
 import graphTraverser
@@ -46,12 +47,13 @@ def resource_user_and_subgraph_list():
 	graph.create_coach_coachee_relationship(J, I)
 	graph.create_coach_coachee_relationship(K, G)
 	graph.create_coach_coachee_relationship(K, H)
-	subgraph3 = [G, H, I, J, K]
+	subgraph3 = [G, H, I, J, K]	
 
 	return graph.users, [subgraph1, subgraph2, subgraph3]
 
 def test_get_subgraphs(resource_user_and_subgraph_list):
 	graph, controlSubgraphs = resource_user_and_subgraph_list
+
 	controlSubgraphSets = tuple([frozenset(subgraph) for subgraph in controlSubgraphs])
 
 	test_subgraphs = graphTraverser.get_subgraphs(graph)
@@ -89,17 +91,6 @@ def test_get_connected_network():
 
 	assert set(network) == set([A, B, C, D, E])
 
-
-def test_get_add_to():
-	mylist = []
-	add_to = graphTraverser.get_add_to(mylist)
-	check_add_to_obeys_scope(add_to)
-
-	assert mylist == [1,3]
-
-def check_add_to_obeys_scope(add_to):
-	add_to(1)
-	add_to(3)
 
 
 

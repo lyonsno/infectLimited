@@ -1,6 +1,7 @@
 import pytest
 from user import User
 from coachingGraph import CoachingGraph
+import graphTraverser
 
 def test_semi_random_graph():
 	graph = CoachingGraph()
@@ -74,34 +75,6 @@ def test_add_user():
 
 	assert userA in graph.users
 
-def test_infect_random():
-	graph = CoachingGraph()
-	A = User()
-	B = User()
-	C = User()
-	graph.add_user(A)
-	graph.add_user(B)
-	graph.add_user(C)
-
-	graph.infect_random()
-	infected = [user for user in graph.users if user.infected]
-
-	assert len(infected) == 1
-
-# def test_are_connected():
-# 	graph = CoachingGraph()
-# 	A = User()
-# 	B = User()
-# 	C = User()
-# 	D = User()
-# 	graph.add_users([A, B, C, D])
-	
-# 	graph.create_coach_coachee_relationship(A, B)
-# 	graph.create_coach_coachee_relationship(B, C)
-
-# 	assert graph.is_path(A, C)
-# 	assert not graph.is_path(A, D)
-
 def test_get_subgraphs():
 	graph = CoachingGraph()
 	A = User()
@@ -115,21 +88,12 @@ def test_get_subgraphs():
 	graph.create_coach_coachee_relationship(C, D)
 	graph.create_coach_coachee_relationship(D, E)
 	
-	subgraphs = graph.get_subgraphs()
+	subgraphs = graphTraverser.get_subgraphs(graph.users)
 	subgraphs = set(tuple([frozenset(tuple(subgraph)) for subgraph in subgraphs]))
 
 	assert frozenset(tuple([A, B])) in subgraphs
 	assert frozenset(tuple([C, D, E])) in subgraphs
 	assert frozenset(tuple([F])) in subgraphs
-
-def test_infect_user():
-	graph = CoachingGraph()
-	userA = User()
-
-	graph.add_user(userA)	
-	graph.infect_user(userA)
-
-	assert userA.infected
 
 @pytest.fixture()
 def resource_create_coach_coachee_relationship():

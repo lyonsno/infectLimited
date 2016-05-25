@@ -14,31 +14,13 @@ def get_subgraphs(nodes):
 	return subgraphs
 
 def are_connected(nodeA, nodeB):
-	areConnected = False
-	is_in_graph = get_is_in_graph(nodeB)
-
-	return breadth_first_apply_monad(nodeA, is_in_graph)
-
-def get_is_in_graph(node_to_find):
-	def is_in_graph(node):
-		if node == node_to_find:
-			return True
-	return is_in_graph
+	return traverse_from_collect_if(nodeA, lambda node: node == nodeB)
 
 def get_connected_network(node):
-	network = []
-	add_to = get_add_to(network)
+	return traverse_from_collect_if(node, lambda node: True)
 
-	breadth_first_apply_monad(node, add_to)
-
-	return network
-
-def get_add_to(list):
-	def add_to_network(node):
-		list.append(node)
-	return add_to_network
-
-def breadth_first_apply_monad(node, monad):
+def breadth_first_apply_function(node, function):
+	nodes = []
 	seen = Queue()
 	seen.put(node)
 	while not seen.empty():
@@ -48,8 +30,89 @@ def breadth_first_apply_monad(node, monad):
 			if not neighbor.visited:
 				neighbor.visited = True
 				seen.put(neighbor)
-		result = monad(current)
+		nodes.append(current)
+		result = function(current)
 		if result is not None:
 			return result
+	unmark_nodes(nodes)
+	return True
+
+def traverse_from_collect_if(node, condition):
+	collectedNodes = []
+	markedNodes = []
+
+	seen = Queue()
+	seen.put(node)
+
+	while not seen.empty():
+		current = seen.get()
+		neighbors = current.coaches + current.coachees
+		for neighbor in neighbors:
+			if not neighbor.visited:
+				neighbor.visited = True
+				seen.put(neighbor)
+		markedNodes.append(current)
+		if condition(current):
+			collectedNodes.append(current)
+
+	unmark_nodes(markedNodes)
+	return collectedNodes	
+
+def traverse_from_collect_if_avoid_if(node, collectCondition, avoidCondition):
+	collectedNodes = []
+	markedNodes = []
+
+	seen = Queue()
+	seen.put(node)
+
+	while not seen.empty():
+		current = seen.get()
+		neighbors = current.coaches + current.coachees
+		for neighbor in neighbors:
+			if not neighbor.visited and not avoidCondition(neighbor):
+				neighbor.visited = True
+				seen.put(neighbor)
+		markedNodes.append(current)
+		if collectCondition(current):
+			collectedNodes.append(current)
+
+	unmark_nodes(markedNodes)
+	return collectedNodes	
+
+def traverse_from_to_depth_collect_if_avoid_if(node, maxDepth, collectCondition, avoidCondition):
+	collectedNodes = []
+	markedNodes = []
+	depth = 0
+	pendingDepthIncrease = True
+	timeToDepthIncrease = 1
+	seen = Queue()
+	seen.put(node)
+
+	while not seen.empty():
+		current = seen.get()
+		timeToDepthIncrease -= 1
+		if timeToDepthIncrease == 0:
+			depth += 1
+			pendingDepthIncrease = True
+		if depth == maxDepth:
+			break
+		neighbors = current.coaches + current.coachees
+		for neighbor in neighbors:
+			if not neighbor.visited and not avoidCondition(neighbor):
+				neighbor.visited = True
+				if pendingDepthIncrease:
+					timeToDepthIncrease = seen.qsize()
+					pendingDepthIncrease = False
+				seen.put(neighbor)
+		markedNodes.append(current)
+		if collectCondition(current):
+			collectedNodes.append(current)
+
+	unmark_nodes(markedNodes)
+	return collectedNodes	
+
+def unmark_nodes(nodes):
+	for node in nodes:
+		node.visited = False
 
 
