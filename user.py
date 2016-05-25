@@ -7,7 +7,7 @@ class User():
 		self.visited = False
 		self.numConnections = 0
 		self.epicenter = False
-		
+
 	def add_coach(self, user):
 		self.coaches.append(user)
 		self.neighbors.append(user)

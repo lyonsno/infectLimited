@@ -9,7 +9,7 @@ from infecter import Infecter
 @pytest.fixture()
 def resource_semi_random_graph_users():
 	graph = CoachingGraph()
-	graph.init_semi_random(60)
+	graph.init_semi_random(200)
 	# viz = GraphVisualizer(graph)
 	# viz.draw()
 
@@ -86,8 +86,81 @@ def test_find_neighbor_with_fewest_connections():
 
 	assert userWithFewest == F
 
+@pytest.fixture()
+def resource_test_graph():
+	subgraph = CoachingGraph()
+	A = User()
+	B = User()
+	C = User()
+	D = User()
+	E = User()
+	F = User()
+	G = User()
+	H = User()
+	I = User()
+	J = User()
+	K = User()
+	L = User()
+	subgraph.add_users([A, B, C, D, E, F, G, H, I, J, K, L])
+	subgraph.create_coach_coachee_relationship(A, B)
+	subgraph.create_coach_coachee_relationship(B, C)
+	subgraph.create_coach_coachee_relationship(B, D)
+	subgraph.create_coach_coachee_relationship(C, E)
+	subgraph.create_coach_coachee_relationship(A, F)
+	subgraph.create_coach_coachee_relationship(E, H)
+	subgraph.create_coach_coachee_relationship(E, G)
+	subgraph.create_coach_coachee_relationship(G, I)
+	subgraph.create_coach_coachee_relationship(G, J)
+	subgraph.create_coach_coachee_relationship(F, K)
+	subgraph.create_coach_coachee_relationship(F, L)
 
+	return subgraph
 
+# def test_get_num_paths_out(resource_test_graph):
+# 	subgraph = CoachingGraph()
+# 	A = User()
+# 	B = User()
+# 	C = User()
+# 	D = User()
+# 	E = User()
+# 	F = User()
+# 	G = User()
+# 	H = User()
+# 	I = User()
+# 	J = User()
+# 	K = User()
+# 	L = User()
+# 	M = User()
+# 	subgraph.add_users([A, B, C, D, E, F, G, H, I, J, K, L, M])
+# 	subgraph.create_coach_coachee_relationship(A, B)
+# 	subgraph.create_coach_coachee_relationship(B, C)
+# 	subgraph.create_coach_coachee_relationship(B, D)
+# 	subgraph.create_coach_coachee_relationship(C, E)
+# 	subgraph.create_coach_coachee_relationship(A, F)
+# 	subgraph.create_coach_coachee_relationship(E, H)
+# 	subgraph.create_coach_coachee_relationship(E, G)
+# 	subgraph.create_coach_coachee_relationship(G, I)
+# 	subgraph.create_coach_coachee_relationship(G, J)
+# 	subgraph.create_coach_coachee_relationship(F, K)
+# 	subgraph.create_coach_coachee_relationship(F, L)
+
+# 	infecter = Infecter()
+
+# 	numPathsOutC = infecter.get_num_paths_out(C)
+# 	numPathsOutF = infecter.get_num_paths_out(F)
+# 	numPathsOutM = infecter.get_num_paths_out(M)
+
+# 	assert numPathsOutC == 2
+# 	assert numPathsOutF == 1
+# 	assert numPathsOutM == 0
+
+# def test_find_most_isolated_hubs():
+# 	graph = resource_test_graph
+# 	infecter = Infecter()
+
+# 	mostIsolatedHubs = infecter.find_most_isolated_hubs(graph.users)
+
+# 	assert set(tuple(mostIsolatedHubs)) == set(G, F)
 
 
 

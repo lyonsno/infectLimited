@@ -1,4 +1,5 @@
 import random
+import pickle
 from user import User
 from infecter import Infecter
 import graphTraverser
@@ -23,24 +24,25 @@ class CoachingGraph():
 			for user in self.users:
 				self.make_random_connection(user)
 
+	# generates a random aproximation of coach coachee relations
 	def init_semi_random(self, size):
 		self.users = []
 
-		numCoaches = (size // 10) + 1
+		numCoaches = (size // 6) + 1
 		remainingCoachees = size - numCoaches
 		coacheesPerCoach = remainingCoachees // numCoaches
 		remaining = size
 
 		while remaining > 0:
 
-			numCoachees = random.randint(1, coacheesPerCoach * 2)
+			numCoachees = random.randint(1, coacheesPerCoach * 2.5)
 			remaining -= 1
 
 			numCoachees = min(numCoachees, remaining)
 			self.add_coach(numCoachees)
 			remaining -= numCoachees
 
-		self.make_sparse_random_connections(size // 4)
+		self.make_sparse_random_connections(size // 10)
 
 	def add_coach(self, numCoachees):
 		coach = User()
@@ -77,4 +79,17 @@ class CoachingGraph():
 		if userA not in self.users or userB not in self.users: return
 		userA.add_coachee(userB)
 		userB.add_coach(userA)
+
+	def save_graph(self):
+		filename = 'test_graph_1.pkl'
+		with open(filename, 'wb') as output:
+			pickle.dump(self.users, output, pickle.HIGHEST_PROTOCOL)
+
+	def load_graph(self):
+		filename = 'test_graph_1.pkl'
+		with open(filename, 'rb') as input:
+			self.users = pickle.load(input)
+
+
+
 

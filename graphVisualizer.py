@@ -10,6 +10,7 @@ class GraphVisualizer():
 	def __init__(self, users):
 		self.users = users
 		self.visualGraph = nx.DiGraph(name="users")
+		self.pos = None
 		self.process_graph()
 
 	def process_graph(self):
@@ -22,6 +23,8 @@ class GraphVisualizer():
 			for coachee in user.coachees:
 				if not (user,coachee) in self.visualGraph.edges():
 					self.visualGraph.add_edge(user, coachee, arrows=True)
+		# generate node positions
+		self.pos = nx.spring_layout(self.visualGraph, scale=1, k=0.025, iterations=40)
 
 	def get_color(self, user):
 		if user.epicenter:
@@ -32,16 +35,14 @@ class GraphVisualizer():
 			return 'black'
 
 	def draw(self):
-		# generate node positions
-		pos = nx.spring_layout(self.visualGraph, scale=10, k=0.06, iterations=120)
 
 		# draw edges with arrows
 		coachEdges = [(n[0], n[1]) for n in self.visualGraph.edges(data=True) if n[2]['arrows'] == True]
-		nx.draw_networkx_edges(self.visualGraph, pos, edgelist=coachEdges, arrows=True)
+		nx.draw_networkx_edges(self.visualGraph, self.pos, edgelist=coachEdges, arrows=True)
 
 		# draw rest of graph
 		colorMap = {'green':'#12e8b9', 'black':'black', 'red':'red'}
-		nx.draw(self.visualGraph, pos, arrows=False, node_color=[colorMap[self.visualGraph.node[node]['category']] for node in self.visualGraph], node_size=30)
+		nx.draw(self.visualGraph, self.pos, arrows=False, node_color=[colorMap[self.visualGraph.node[node]['category']] for node in self.visualGraph], node_size=30)
 		plt.show()
 
 
