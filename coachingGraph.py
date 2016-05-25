@@ -1,13 +1,16 @@
 import random
-import pickle
+import pickler
+from logger import logger
 from user import User
 from infecter import Infecter
+from graphVisualizer import GraphVisualizer
 import graphTraverser
 
 class CoachingGraph():	
 	def __init__(self):
 		self.users = []
 		self.infecter = Infecter()
+		self.visualizer = GraphVisualizer(self.users)
 
 	def init_random(self, numUsers):
 		self.users = []
@@ -80,15 +83,29 @@ class CoachingGraph():
 		userA.add_coachee(userB)
 		userB.add_coach(userA)
 
-	def save_graph(self):
-		filename = 'test_graph_1.pkl'
-		with open(filename, 'wb') as output:
-			pickle.dump(self.users, output, pickle.HIGHEST_PROTOCOL)
+	def draw(self):
+		self.visualizer.update(self.users)
+		self.visualizer.draw()
 
-	def load_graph(self):
-		filename = 'test_graph_1.pkl'
-		with open(filename, 'rb') as input:
-			self.users = pickle.load(input)
+
+	def generate_test_graphs(self, numGraphs, size, prefix):
+		for i in range(numGraphs):
+			self.init_semi_random(size)
+			self.visualizer.update(self.users)
+			suffix = i + 1
+			self.save(prefix + '{}'.format(suffix))
+
+	def save_as(self, filename):
+		data = [self.users, self.visualizer]
+		pickler.save_as(data, filename)
+
+	def load_from(self, filename):
+		try:
+			data = pickler.load_file(filename)
+		except FileNotFoundError:
+			logger.error('Failed to load, File not found', exc_info=True)
+		except Exception:
+			logger.error('Failed to load, something else went wrong', exc_info=True)
 
 
 

@@ -8,7 +8,6 @@ def get_subgraphs(nodes):
 		node = setOfNodes.pop()
 		nodeNetwork = get_connected_network(node)
 		subgraphs.append(nodeNetwork)
-		print(nodeNetwork)
 		setOfNodes -= set(nodeNetwork)
 
 	return subgraphs

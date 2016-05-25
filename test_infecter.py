@@ -1,10 +1,15 @@
 import random
 import pytest
+from logger import logger
 from user import User
 from coachingGraph import CoachingGraph
 import graphTraverser
 from graphVisualizer import GraphVisualizer
 from infecter import Infecter
+
+@pyrest.fixture():
+def resource_persistent_test_graphs():
+	pass
 
 @pytest.fixture()
 def resource_semi_random_graph_users():
@@ -28,7 +33,6 @@ def test_infect_from(resource_semi_random_graph_users):
 def exactly_one_subgraph_infected(subgraphs):
 	infectedSubgraphs = [subgraph for subgraph in subgraphs if all_are_infected(subgraph)]
 
-	print(len(infectedSubgraphs))
 	return len(infectedSubgraphs) == 1 
 
 def all_are_infected(subgraph):

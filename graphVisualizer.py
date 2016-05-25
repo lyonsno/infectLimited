@@ -2,7 +2,6 @@ from operator import itemgetter
 import networkx as nx
 import matplotlib.pyplot as plt
 
-from coachingGraph import CoachingGraph
 from user import User
 
 class GraphVisualizer():
@@ -11,6 +10,13 @@ class GraphVisualizer():
 		self.users = users
 		self.visualGraph = nx.DiGraph(name="users")
 		self.pos = None
+		self.process_graph()
+
+	def update(self, updatedUsers):
+		if set(tuple(updatedUsers)) == set(tuple(self.users)):
+			return
+
+		self.users = updatedUsers
 		self.process_graph()
 
 	def process_graph(self):
