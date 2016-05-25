@@ -16,7 +16,6 @@ class Infecter():
 		user.epicenter = True
 		self.infect_single_user(user)
 		infectedUsers = [user]
-		activeInfectedUsers = [user]
 
 		while len(infectedUsers) < numUsersToInfect:
 
@@ -25,9 +24,12 @@ class Infecter():
 
 			for user in infectedUsers:
 				
-				neighborWithFewest = self.find_neighbor_with_fewest_connections(user)
+				neighborWithFewest = self.find_neighbor_with_fewest_neighbors(user)
+				
+				# no uninfected neighbors
 				if neighborWithFewest is None:
 					continue
+
 				if neighborWithFewest.numConnections < fewestConnections:
 					fewestConnections = neighborWithFewest.numConnections
 					nextToInfect = neighborWithFewest
@@ -38,6 +40,22 @@ class Infecter():
 			self.infect_single_user(nextToInfect)
 			infectedUsers.append(nextToInfect)
 
+	def find_neighbor_with_fewest_neighbors(self, user):
+		cleanNeighbors = self.get_clean_neighbors(user)
+		fewestNeighbors = math.inf
+		neighborWithFewest = None
+		for neighbor in cleanNeighbors:
+			numNeighbors = len(self.get_clean_neighbors(neighbor))
+			if numNeighbors < fewestNeighbors:
+				neighbor.numConnections = numNeighbors
+				fewestNeighbors = numNeighbors
+				neighborWithFewest = neighbor
+
+
+		return neighborWithFewest
+
+
+	# TODO REMOVE IF NOT NEEDED
 	def find_neighbor_with_fewest_connections(self, user):
 		cleanNeighbors = self.get_clean_neighbors(user)
 		leastConnections = math.inf
@@ -45,7 +63,7 @@ class Infecter():
 		neighborWithFewest = None
 
 		for neighbor in cleanNeighbors:
-			connections = graphTraverser.traverse_from_to_depth_collect_if_avoid_if(neighbor, 4, lambda neighbor: True, lambda neighbor: neighbor.infected)
+			connections = graphTraverser.traverse_from_to_depth_collect_if_avoid_if(neighbor, 3, lambda neighbor: True, lambda neighbor: neighbor.infected)
 			neighbor.numConnections = len(connections)
 			if neighbor.numConnections < leastConnections:
 				leastConnections = neighbor.numConnections
@@ -57,12 +75,13 @@ class Infecter():
 		cleanNeighbors = set()
 		infected = [user for user in users if user.infected]
 		for user in infected:
-			for neighbor in user.neighbors:
-				cleanNeighbors.add(neighbor)
+			cleanNeighbors.update(self.get_clean_neighbors(user))
 		return cleanNeighbors
 
 	def get_clean_neighbors(self, user):
 		return [ neighbor for neighbor in user.neighbors if not neighbor.infected ]
+
+
 
 	def find_most_isolated_hubs(self, users):
 		

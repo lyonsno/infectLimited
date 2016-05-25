@@ -9,10 +9,14 @@ import graphTraverser
 from graphVisualizer import GraphVisualizer
 from infecter import Infecter
 
-NUM_TEST_GRAPHS = 2
+NUM_TEST_GRAPHS = 10
 TEST_GRAPH_DIRECTORY_NAME = 'testData'
 TEST_GRAPH_SUFFIX = 'testGraph.pkl'
 
+@pytest.fixture()
+def resource_num_test_iterations():
+	return 20
+	
 @pytest.fixture()
 def resource_persistent_test_graphs():
 	logger.info("fetching test graph resource")
@@ -31,12 +35,8 @@ def load_test_graphs():
 	for file in fileNames:
 		fullPath = os.path.join(dirName, file)
 		graph = CoachingGraph()
-		logger.info('loading test graph')
 		graph.load_from(fullPath)
-
 		testGraphs.append(graph)
-		logger.info('drawing test graph')
-		graph.draw()
 	return testGraphs
 
 def generate_test_graphs(numGraphs):
@@ -143,16 +143,28 @@ def test_get_num_infected():
 	assert infecter.get_num_infected(graph.users) == 2
 
 def test_infect_limited(resource_persistent_test_graphs):
+	cleanNeighbors = 0
 	for graph in resource_persistent_test_graphs:
-		assert get_performance_infect_limited(graph) > 0
+
+		cleanNeighbors += get_performance_infect_limited(graph)
+
+	assert cleanNeighbors < 10
+
+def test_infect_limited_traversal_algorithm(resource_persistent_test_graphs, resource_num_test_iterations):
+	cleanNeighbors = 0
+	for i in range(resource_num_test_iterations):
+		for graph in resource_persistent_test_graphs:
+			cleanNeighbors += get_performance_infect_limited(graph)
+			graph.clean()
+	cleanNeighbors /= resource_num_test_iterations
+	avgCleanNeighborsPerGraph = cleanNeighbors / len(resource_persistent_test_graphs)
+	assert avgCleanNeighborsPerGraph < 10
 
 def get_performance_infect_limited(graph):
 	infecter = Infecter()
 
 	start = random.choice(graph.users)
 	infecter.infect_limited_from(start, 25, 3)
-	graph.draw()
-
 
 	return infecter.get_num_infected(graph.users)
 
@@ -165,18 +177,18 @@ def test_get_all_clean_neighbors():
 	D = User()
 	E = User()
 	F = User()
-	graph.add_users([A, B, C, D, E])
+	graph.add_users([A, B, C, D, E, F])
 	graph.create_coach_coachee_relationship(A, B)
 	graph.create_coach_coachee_relationship(B, C)
 	graph.create_coach_coachee_relationship(B, D)
+	graph.create_coach_coachee_relationship(D, A)
 	graph.create_coach_coachee_relationship(D, E)
 	graph.create_coach_coachee_relationship(F, C)
 	B.infected = True
 	D.infected = True
 
 	cleanNeighbors = infecter.get_all_clean_neighbors(graph.users)
-
-	assert set([A, C, E, F]) == cleanNeighbors
+	assert set((A, C, E)) == cleanNeighbors
 
 
 def test_find_neighbor_with_fewest_connections():

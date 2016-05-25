@@ -83,6 +83,13 @@ class CoachingGraph():
 		userA.add_coachee(userB)
 		userB.add_coach(userA)
 
+	def clean(self):
+		for user in self.users:
+			user.infected = False
+			user.numConnections = 0
+			user.epicenter = False
+			user.visited = False
+
 	def draw(self):
 		self.visualizer.update(self.users)
 		self.visualizer.draw()
