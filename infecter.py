@@ -53,6 +53,14 @@ class Infecter():
 
 		return neighborWithFewest
 
+	def get_all_clean_neighbors(self, users):
+		cleanNeighbors = set()
+		infected = [user for user in users if user.infected]
+		for user in infected:
+			for neighbor in user.neighbors:
+				cleanNeighbors.add(neighbor)
+		return cleanNeighbors
+
 	def get_clean_neighbors(self, user):
 		return [ neighbor for neighbor in user.neighbors if not neighbor.infected ]
 

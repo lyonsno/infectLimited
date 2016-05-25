@@ -13,6 +13,9 @@ logging.config.dictConfig({
     'version': 1,              
     'disable_existing_loggers': False,  # this fixes the problem
 
+    'filename': 'infectionLog.log',
+    'filemode': 'w',
+
     'formatters': {
         'standard': {
             'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
@@ -23,10 +26,16 @@ logging.config.dictConfig({
             'level':'INFO',    
             'class':'logging.StreamHandler',
         },  
+        'toFile': {
+            'filename': 'testLog.log',
+            'mode':'w',
+            'level':'INFO',
+            'class':'logging.FileHandler',
+        },
     },
     'loggers': {
         '': {                  
-            'handlers': ['default'],        
+            'handlers': ['toFile', 'default'],
             'level': 'INFO',  
             'propagate': True  
         }

@@ -87,15 +87,8 @@ class CoachingGraph():
 		self.visualizer.update(self.users)
 		self.visualizer.draw()
 
-
-	def generate_test_graphs(self, numGraphs, size, prefix):
-		for i in range(numGraphs):
-			self.init_semi_random(size)
-			self.visualizer.update(self.users)
-			suffix = i + 1
-			self.save(prefix + '{}'.format(suffix))
-
 	def save_as(self, filename):
+		self.visualizer.update(self.users)
 		data = [self.users, self.visualizer]
 		pickler.save_as(data, filename)
 
@@ -106,6 +99,8 @@ class CoachingGraph():
 			logger.error('Failed to load, File not found', exc_info=True)
 		except Exception:
 			logger.error('Failed to load, something else went wrong', exc_info=True)
+
+		self.users, self.visualizer = data
 
 
 

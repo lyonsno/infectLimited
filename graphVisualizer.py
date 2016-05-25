@@ -1,5 +1,6 @@
 from operator import itemgetter
 import networkx as nx
+from logger import logger
 import matplotlib.pyplot as plt
 
 from user import User
@@ -15,7 +16,7 @@ class GraphVisualizer():
 	def update(self, updatedUsers):
 		if set(tuple(updatedUsers)) == set(tuple(self.users)):
 			return
-
+		logger.info("updating visualizer: {} old users replaced with {} new users".format(len(self.users), len(updatedUsers)))
 		self.users = updatedUsers
 		self.process_graph()
 
