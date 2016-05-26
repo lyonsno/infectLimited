@@ -1,4 +1,6 @@
 import random
+import math
+
 import pickler
 from logger import logger
 from user import User
@@ -28,7 +30,7 @@ class CoachingGraph():
 				self.make_random_connection(user)
 
 	# generates a random aproximation of coach coachee relations
-	def init_semi_random(self, size):
+	def init_semi_random(self, size, connectionFactor=10, coacheesFactor=2):
 		self.users = []
 
 		numCoaches = (size // 6) + 1
@@ -38,14 +40,14 @@ class CoachingGraph():
 
 		while remaining > 0:
 
-			numCoachees = random.randint(1, coacheesPerCoach * 2.5)
+			numCoachees = random.randint(1, math.floor(coacheesPerCoach * coacheesFactor))
 			remaining -= 1
 
 			numCoachees = min(numCoachees, remaining)
 			self.add_coach(numCoachees)
 			remaining -= numCoachees
 
-		self.make_sparse_random_connections(size // 10)
+		self.make_sparse_random_connections(size // connectionFactor)
 
 	def add_coach(self, numCoachees):
 		coach = User()
@@ -104,9 +106,10 @@ class CoachingGraph():
 			data = pickler.load_file(filename)
 		except FileNotFoundError:
 			logger.error('Failed to load, File not found', exc_info=True)
+			return
 		except Exception:
 			logger.error('Failed to load, something else went wrong', exc_info=True)
-
+			return
 		self.users, self.visualizer = data
 
 

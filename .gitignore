@@ -1,3 +1,7 @@
 .DS_Store
 __pycache__/
 .cache/
+sample_test_graphs/*
+threeMediumSized/*
+save_and_load
+*.log

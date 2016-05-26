@@ -125,9 +125,9 @@ def test_create_coach_coachee_relationship_doesnt_add_wrong_coach(resource_creat
 def test_save_and_load():
 	graph = CoachingGraph()
 	graph.init_semi_random(100)
-	graph.save_as('test_save_and_load')
+	graph.save_as('save_and_load')
 	graphB = CoachingGraph()
-	graphB.load_from('test_save_and_load')
+	graphB.load_from('save_and_load')
 
 	assert len(graph.users) == len(graphB.users)
 

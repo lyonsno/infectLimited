@@ -15,12 +15,13 @@ class GraphVisualizer():
 
 	def update(self, updatedUsers):
 		if set(tuple(updatedUsers)) == set(tuple(self.users)):
+			self.update_nodes()
 			return
 		logger.info("updating visualizer: {} old users replaced with {} new users".format(len(self.users), len(updatedUsers)))
 		self.users = updatedUsers
 		self.process_graph()
 
-	def process_graph(self):
+	def update_nodes(self):
 		for user in self.users:
 			color = self.get_color(user)
 			self.visualGraph.add_node(user, category=color)
@@ -30,6 +31,9 @@ class GraphVisualizer():
 			for coachee in user.coachees:
 				if not (user,coachee) in self.visualGraph.edges():
 					self.visualGraph.add_edge(user, coachee, arrows=True)
+
+	def process_graph(self):
+		self.update_nodes()
 		# generate node positions
 		self.pos = nx.spring_layout(self.visualGraph, scale=1, k=0.025, iterations=40)
 
@@ -52,27 +56,3 @@ class GraphVisualizer():
 		nx.draw(self.visualGraph, self.pos, arrows=False, node_color=[colorMap[self.visualGraph.node[node]['category']] for node in self.visualGraph], node_size=30)
 		plt.show()
 
-
-# g = CoachingGraph()
-# A = User()
-# B = User()
-# C = User()
-# D = User()
-# E = User()
-
-# g.add_user(A)
-# g.add_user(B)
-# g.add_user(C)
-# g.add_user(D)
-# g.add_user(E)
-# g.start_coaching(A, C)
-# g.start_coaching(B, A)
-# g.start_coaching(C, D)
-# g.start_coaching(B, D)
-# g.start_coaching(E, D)
-
-# g.init_semi_random(40)
-# g.infect()
-# viz = GraphVisualizer(g)
-# viz.process_graph()
-# viz.draw()
