@@ -1,5 +1,26 @@
 from queue import *
 
+def pop_largest_subgraph_smaller_than(subgraphsBySize, maxSize):
+	largestSize = 0
+	largest = None
+	for subgraph in subgraphsBySize:
+		size = len(subgraph)
+		if size > maxSize:
+			break
+		if size > largestSize:
+			largestSize = size
+			largest = subgraph
+	if largest == None:
+		return subgraphsBySize.pop(0)
+	else:
+		subgraphsBySize.remove(largest)
+		return largest
+
+def get_subgraphs_sorted(nodes):
+	subgraphs = get_subgraphs(nodes)
+	subgraphs.sort(key=lambda subgraph: len(subgraph))
+	return subgraphs
+
 def get_subgraphs(nodes):
 	setOfNodes = set(nodes)
 	

@@ -69,7 +69,7 @@ class CoachingGraph():
 		coachee = user
 		while coachee == user:
 			coachee = random.choice(self.users)
-			if user.has_coachee(coachee): continue
+			if coachee in user.neighbors: continue
 		self.create_coach_coachee_relationship(user, coachee)
 
 	def add_user(self, user):

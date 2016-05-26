@@ -9,20 +9,31 @@ TEST_GRAPH_DIRECTORY_NAME = 'testData'
 TEST_GRAPH_SUFFIX = 'testGraph.pkl'
 MAX_SIZE = 600
 
-def custom_persistent_test_graphs(folderName, numGraphs, maxSize):
-	# if not check_resources_exist(folderName, numGraphs):
+NUM_TEST_GRAPHS_QUICK = 12
+TEST_GRAPH_DIRECTORY_NAME_QUICK = 'testDataQuick'
+TEST_GRAPH_SUFFIX_QUICK = 'testGraph.pkl'
+MAX_SIZE_QUICK = 160
+
+def custom_single_use_test_graphs(folderName, numGraphs, maxSize):
 	generate_test_graphs(folderName, numGraphs, maxSize)
 
 	return load_test_graphs(folderName)
 
 def default_persistent_test_graphs():
-	logger.info("fetching test graph resource")
 	expectedTestGraphs = NUM_TEST_GRAPHS
 	if not check_resources_exist(TEST_GRAPH_DIRECTORY_NAME, expectedTestGraphs):
 			logger.info("generating new test graphs")
 			generate_test_graphs(TEST_GRAPH_DIRECTORY_NAME, expectedTestGraphs, MAX_SIZE)
 	
 	return load_test_graphs(TEST_GRAPH_DIRECTORY_NAME)
+
+def quick_persistent_test_graphs():
+	expectedTestGraphs = NUM_TEST_GRAPHS_QUICK
+	if not check_resources_exist(TEST_GRAPH_DIRECTORY_NAME_QUICK, expectedTestGraphs):
+			logger.info("generating new quick test graphs")
+			generate_test_graphs(TEST_GRAPH_DIRECTORY_NAME_QUICK, expectedTestGraphs, MAX_SIZE_QUICK)
+	
+	return load_test_graphs(TEST_GRAPH_DIRECTORY_NAME_QUICK)
 
 def load_test_graphs(folderName):
 	testGraphs = []
@@ -79,7 +90,6 @@ def check_resources_exist(dirName, expectedNumResources):
 		return False
 
 	resources = get_files_from_directory_with_suffix(dataPath, TEST_GRAPH_SUFFIX)
-	logger.info(resources)
 	return len(resources) == expectedNumResources
 
 def get_files_from_directory_with_suffix(dirPath, suffix):
@@ -90,7 +100,6 @@ def get_files_from_directory_with_suffix(dirPath, suffix):
 def get_test_data_directory(dirName):
 	for path, directory in get_immediate_subdirectories():
 		if directory == dirName:
-			logger.info(directory)
 			return os.path.join(path, directory)
 	raise FileNotFoundError('No directory found matching name: {} in path {}'.format(dirName, get_current_directory()))
 
