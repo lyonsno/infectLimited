@@ -13,7 +13,7 @@ def resource_num_test_iterations():
 
 @pytest.fixture()
 def resource_sample_test_graphs():
-	return utils.custom_single_use_graphs('sample_test_graphs', 5, 200)
+	return utils.custom_single_use_test_graphs('sample_test_graphs', 5, 200)
 
 @pytest.fixture()
 def resource_persistent_test_graphs():
@@ -171,7 +171,7 @@ def test_show_sample_random_traversal_graphs(resource_sample_test_graphs):
 		graph.draw()
 	assert True
 
-@pytest.mark.skip(reason='only for debug')
+# @pytest.mark.skip(reason='only for debug')
 def test_show_sample_infect_limited_graphs(resource_sample_test_graphs):
 	for graph in resource_sample_test_graphs:
 		infecter = Infecter()
