@@ -1,16 +1,59 @@
-import graphTraverser
 import math
+import random
+
+import graphTraverser
 
 class Infecter():
 
 	def __init__(self):
-		pass
+		self.numUsersToInfect = 25
 
 	def infect_single_user(self, user):
 		user.infected = True
 
 	def infect_from(self, user):
 		graphTraverser.breadth_first_apply_function(user, self.infect_single_user)
+
+	def infect_limited(self, users, numUsersToInfect):
+		remaining = numUsersToInfect
+
+		subgraphs = graphTraverser.get_subgraphs(users)
+		subgraphs.sort(key=lambda subgraph: len(subgraph))
+
+		for subgraph in subgraphs:
+			if remaining <= 0: return
+
+			bestStartCandidate = self.find_user_with_fewest_connections(subgraph)
+			self.infect_limited_from(bestStartCandidate, remaining, 3)
+
+			remaining -= self.get_num_infected(subgraph)
+
+
+	def find_user_with_most_connections_up_to(self, users, maxConnections):
+		mostConnections = 0
+		userWithMost = None
+		for user in users:
+			numConnections = len(user.neighbors)
+			if numConnections > mostConnections and numConnections <= maxConnections:
+				mostConnections = numConnections
+				userWithMost = user
+
+		if userWithMost is None:
+			userWithMost = self.find_user_with_fewest_connections(users)
+
+		return userWithMost
+
+	def find_user_with_num_connections_closest_to(self, users, goal):
+		minDifference = math.inf
+		closestUser = None
+		for user in users:
+			numConnections = len(user.neighbors)
+			difference = abs(goal - numConnections)
+			if difference < minDifference:
+				minDifference = difference
+				closestUser = user
+
+		return closestUser
 
 	def infect_limited_from(self, user, numUsersToInfect, fudgeFactor):
 		user.epicenter = True
@@ -70,6 +113,17 @@ class Infecter():
 				neighborWithFewest = neighbor
 
 		return neighborWithFewest
+
+	def find_user_with_fewest_connections(self, users):
+		fewestConnections = math.inf
+		userWithFewest = None
+		for user in users:
+			numConnections = len(user.neighbors)
+			if numConnections < fewestConnections: 
+				fewestConnections = numConnections
+				userWithFewest = user
+
+		return userWithFewest 
 
 	def get_all_clean_neighbors(self, users):
 		cleanNeighbors = set()
