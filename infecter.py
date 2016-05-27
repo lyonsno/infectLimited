@@ -8,7 +8,7 @@ class Infecter():
 
 	def __init__(self):
 		pass 
-	
+
 	def infect_single_user(self, user):
 		user.infected = True
 
@@ -24,11 +24,10 @@ class Infecter():
 		subgraphs = graphTraverser.get_subgraphs_sorted(users)
 
 		finalSubgraph = None
-		# while remaining >= 0:
 		for subgraph in subgraphs:
 			if remaining <= 0 or not subgraphs:
 				break
-			# subgraph = graphTraverser.pop_largest_subgraph_smaller_than(subgraphs, remaining)
+
 			bestStartCandidate = self.find_user_with_fewest_connections(subgraph)
 			self.infect_limited_from(bestStartCandidate, remaining)
 			remaining -= self.get_num_infected(subgraph)
