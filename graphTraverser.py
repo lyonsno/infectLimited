@@ -1,21 +1,5 @@
 from queue import *
 
-def pop_largest_subgraph_smaller_than(subgraphsBySize, maxSize):
-	largestSize = 0
-	largest = None
-	for subgraph in subgraphsBySize:
-		size = len(subgraph)
-		if size > maxSize:
-			break
-		if size > largestSize:
-			largestSize = size
-			largest = subgraph
-	if largest == None:
-		return subgraphsBySize.pop(0)
-	else:
-		subgraphsBySize.remove(largest)
-		return largest
-
 def get_subgraphs_sorted(nodes):
 	subgraphs = get_subgraphs(nodes)
 	subgraphs.sort(key=lambda subgraph: len(subgraph))
@@ -76,60 +60,7 @@ def traverse_from_collect_if(node, condition):
 			collectedNodes.append(current)
 
 	unmark_nodes(markedNodes)
-	return collectedNodes	
-
-def traverse_from_collect_if_avoid_if(node, collectCondition, avoidCondition):
-	collectedNodes = []
-	markedNodes = []
-
-	seen = Queue()
-	seen.put(node)
-
-	while not seen.empty():
-		current = seen.get()
-		neighbors = current.coaches + current.coachees
-		for neighbor in neighbors:
-			if not neighbor.visited and not avoidCondition(neighbor):
-				neighbor.visited = True
-				seen.put(neighbor)
-		markedNodes.append(current)
-		if collectCondition(current):
-			collectedNodes.append(current)
-
-	unmark_nodes(markedNodes)
-	return collectedNodes	
-
-def traverse_from_to_depth_collect_if_avoid_if(node, maxDepth, collectCondition, avoidCondition):
-	collectedNodes = []
-	markedNodes = []
-	depth = 0
-	pendingDepthIncrease = True
-	timeToDepthIncrease = 1
-	seen = Queue()
-	seen.put(node)
-
-	while not seen.empty():
-		current = seen.get()
-		timeToDepthIncrease -= 1
-		if timeToDepthIncrease == 0:
-			depth += 1
-			pendingDepthIncrease = True
-		if depth == maxDepth:
-			break
-		neighbors = current.coaches + current.coachees
-		for neighbor in neighbors:
-			if not neighbor.visited and not avoidCondition(neighbor):
-				neighbor.visited = True
-				if pendingDepthIncrease:
-					timeToDepthIncrease = seen.qsize()
-					pendingDepthIncrease = False
-				seen.put(neighbor)
-		markedNodes.append(current)
-		if collectCondition(current):
-			collectedNodes.append(current)
-
-	unmark_nodes(markedNodes)
-	return collectedNodes	
+	return collectedNodes		
 
 def unmark_nodes(nodes):
 	for node in nodes:
