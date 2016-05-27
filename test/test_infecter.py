@@ -50,29 +50,6 @@ def test_get_num_infected():
 
 	assert infecter.get_num_infected(graph.users) == 2
 
-def test_get_all_clean_neighbors():
-	infecter = Infecter()
-	graph = CoachingGraph()
-	A = User()
-	B = User()
-	C = User()
-	D = User()
-	E = User()
-	F = User()
-	graph.add_users([A, B, C, D, E, F])
-	graph.create_coach_coachee_relationship(A, B)
-	graph.create_coach_coachee_relationship(B, C)
-	graph.create_coach_coachee_relationship(B, D)
-	graph.create_coach_coachee_relationship(D, A)
-	graph.create_coach_coachee_relationship(D, E)
-	graph.create_coach_coachee_relationship(F, C)
-	B.infected = True
-	D.infected = True
-
-	cleanNeighbors = infecter.get_all_clean_neighbors(graph.users)
-	assert set((A, C, E)) == cleanNeighbors
-
-
 def test_find_neighbor_with_fewest_connections():
 	graph = CoachingGraph()
 	A = User()
@@ -112,41 +89,3 @@ def test_find_user_with_fewest_connections():
 	actual = infecter.find_user_with_fewest_connections(subgraph.users)
 
 	assert expected == actual
-
-def test_get_all_clean_neighbors():
-	graph = CoachingGraph()
-	A = User()
-	B = User()
-	C = User()
-	D = User()
-	E = User()
-	F = User()
-	G = User()
-	H = User()
-	I = User()
-	J = User()
-	K = User()
-	L = User()
-	graph.add_users([A, B, C, D, E, F, G, H, I, J, K, L])
-	graph.create_coach_coachee_relationship(A, B)
-	graph.create_coach_coachee_relationship(B, C)
-	graph.create_coach_coachee_relationship(B, D)
-	graph.create_coach_coachee_relationship(C, E)
-	graph.create_coach_coachee_relationship(A, F)
-	graph.create_coach_coachee_relationship(E, H)
-	graph.create_coach_coachee_relationship(E, G)
-	graph.create_coach_coachee_relationship(G, I)
-	graph.create_coach_coachee_relationship(G, J)
-	graph.create_coach_coachee_relationship(F, K)
-	graph.create_coach_coachee_relationship(F, L)
-
-	C.infected = True
-	E.infected = True
-	B.infected = True
-
-	expected = set([A, D, G, H])
-	infecter = Infecter()
-
-	actual = infecter.get_all_clean_neighbors(graph.users)
-
-	assert actual == expected

@@ -117,20 +117,8 @@ class Infecter():
 			cleanNeighbors.append(self.get_clean_neighbors(user))
 		return len(cleanNeighbors)
 
-	def get_all_clean_neighbors(self, users):
-		cleanNeighbors = set()
-		infected = [user for user in users if user.infected]
-		for user in infected:
-			cleanNeighbors.update(self.get_clean_neighbors(user))
-		return cleanNeighbors
-
 	def get_clean_neighbors(self, user):
 		return [ neighbor for neighbor in user.neighbors if not neighbor.infected ]
-
-	def find_most_isolated_hubs(self, users):
-		for user in users:
-			pass
-
 
 	def get_num_infected(self, users):
 		numInfected = 0

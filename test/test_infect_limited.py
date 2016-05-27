@@ -15,10 +15,6 @@ def resource_num_test_iterations():
 def resource_persistent_test_graphs():
 	return utils.default_persistent_test_graphs()
 
-@pytest.fixture()
-def resource_persistent_quick_test_graphs():
-	return utils.quick_persistent_test_graphs()
-
 
 def infect_and_return_num_bad_edges(graph, numToInfect):
 	infecter = Infecter()
