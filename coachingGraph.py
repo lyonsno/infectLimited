@@ -49,6 +49,9 @@ class CoachingGraph():
 
 		self.make_sparse_random_connections(size // connectionFactor)
 
+	def init_semi_random_connected(self, size):
+		self.init_semi_random(size, connectionFactor=1)
+
 	def add_coach(self, numCoachees):
 		coach = User()
 		self.add_user(coach)

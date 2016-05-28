@@ -1,5 +1,7 @@
 import pytest
 
+import collections
+from logger import logger
 from graphVisualizer import GraphVisualizer
 from user import User
 from coachingGraph import CoachingGraph
@@ -51,6 +53,17 @@ def resource_user_and_subgraph_list():
 
 	return graph.users, [subgraph1, subgraph2, subgraph3]
 
+def test_get_subgraphs_sorted(resource_user_and_subgraph_list):
+	graph, controlSubgraphs = resource_user_and_subgraph_list
+
+	controlSubgraphSets = tuple([frozenset(subgraph) for subgraph in controlSubgraphs])
+
+	test_subgraphs = graphTraverser.get_subgraphs_sorted(graph)
+	testSubgraphSets = tuple([frozenset(subgraph) for subgraph in test_subgraphs])
+
+
+	assert set(controlSubgraphSets) == set(testSubgraphSets)
+
 def test_get_subgraphs(resource_user_and_subgraph_list):
 	graph, controlSubgraphs = resource_user_and_subgraph_list
 
@@ -62,14 +75,25 @@ def test_get_subgraphs(resource_user_and_subgraph_list):
 
 	assert set(controlSubgraphSets) == set(testSubgraphSets)
 
-def test_are_connected(resource_user_and_subgraph_list):
-	graph, subgraphs = resource_user_and_subgraph_list
-	subgraph = set(tuple(list(subgraphs[0])))
-	userA = subgraph.pop()
-	userB = subgraph.pop()
+def test_get_subgraphs_connected():
+	graph = CoachingGraph()
+	graph.init_semi_random_connected(100)
+	subgraphs = graphTraverser.get_subgraphs(graph.users)
+	combined = []
+	for subgraph in subgraphs:
+		combined.extend(subgraph)
 
-	assert(graphTraverser.are_connected(userA, userB))
+	assert set(combined) == set(graph.users)
 
+def test_traverse_from_collect_if():
+	graphA = CoachingGraph()
+	graphA.init_semi_random_connected(100)
+
+	actualA = len(graphA.users)
+	network = graphTraverser.get_connected_network(graphA.users[0])
+	sizeA = len(network)
+
+	assert sizeA == actualA
 
 def test_get_connected_network():
 	graph = CoachingGraph()

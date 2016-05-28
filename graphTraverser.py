@@ -17,9 +17,6 @@ def get_subgraphs(nodes):
 
 	return subgraphs
 
-def are_connected(nodeA, nodeB):
-	return traverse_from_collect_if(nodeA, lambda node: node == nodeB)
-
 def get_connected_network(node):
 	return traverse_from_collect_if(node, lambda node: True)
 
@@ -44,20 +41,20 @@ def breadth_first_apply_function(node, function):
 def traverse_from_collect_if(node, condition):
 	collectedNodes = []
 	markedNodes = []
-
+	node.visited = True
 	seen = Queue()
 	seen.put(node)
 
 	while not seen.empty():
 		current = seen.get()
-		neighbors = current.coaches + current.coachees
+		if condition(current):
+			collectedNodes.append(current)
+		neighbors = current.neighbors
 		for neighbor in neighbors:
 			if not neighbor.visited:
 				neighbor.visited = True
 				seen.put(neighbor)
 		markedNodes.append(current)
-		if condition(current):
-			collectedNodes.append(current)
 
 	unmark_nodes(markedNodes)
 	return collectedNodes		

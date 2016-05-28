@@ -9,7 +9,7 @@ from logger import logger
 
 @pytest.fixture()
 def resource_num_test_iterations():
-	return 20
+	return 10
 
 @pytest.fixture()
 def resource_persistent_quick_test_graphs():
@@ -42,14 +42,17 @@ def infect_limmited_return_num_bad_edges(graph, numToInfect):
 
 	return infecter.get_solution_quality(graph.users), numInfected
 
+# @pytest.mark.skip()
 def test_infect_limited_onehundred_quick(resource_persistent_quick_test_graphs, resource_num_test_iterations):
 	infection_quality = run_algorithm(100, resource_persistent_quick_test_graphs, resource_num_test_iterations)
 	assert False
 
+# @pytest.mark.skip()
 def test_infect_limited_fifty_quick(resource_persistent_quick_test_graphs, resource_num_test_iterations):
 	infection_quality = run_algorithm(50, resource_persistent_quick_test_graphs, resource_num_test_iterations)
 	assert False
 
+# @pytest.mark.skip()
 def test_infect_limited_twentyfive_quick(resource_persistent_quick_test_graphs, resource_num_test_iterations):
 	infection_quality = run_algorithm(25, resource_persistent_quick_test_graphs, resource_num_test_iterations)
 	assert False

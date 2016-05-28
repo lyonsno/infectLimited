@@ -15,6 +15,43 @@ def resource_semi_random_graph_users():
 
 	return graph.users
 
+def test_infect_limited_from():
+	graph = CoachingGraph()
+	graph.init_semi_random_connected(200)
+	numToInfect = 70
+	users = graph.users
+	user = random.choice(users)
+	infecter = Infecter()
+
+	infecter.infect_limited_from(user, numToInfect)
+	numInfected = infecter.get_num_infected(users)
+
+	assert numInfected == numToInfect
+
+def test_infect_limited_infects_correct_number():
+	graph = CoachingGraph()
+	graph.init_semi_random(200)
+	numToInfect = 70
+	users = graph.users
+	infecter = Infecter()
+
+	infecter.infect_limited(users, numToInfect, 0, False)
+	numInfected = infecter.get_num_infected(users)
+
+	assert numInfected == numToInfect
+
+def test_infect_limited_infects_correct_number_connected():
+	graph = CoachingGraph()
+	graph.init_semi_random_connected(200)
+	numToInfect = 70
+	users = graph.users
+	infecter = Infecter()
+
+	infecter.infect_limited(users, numToInfect, 0, False)
+	numInfected = infecter.get_num_infected(users)
+
+	assert numInfected == numToInfect
+
 def test_infect_from(resource_semi_random_graph_users):
 	users = resource_semi_random_graph_users
 	user = random.choice(users)
@@ -49,6 +86,17 @@ def test_get_num_infected():
 	infecter = Infecter()
 
 	assert infecter.get_num_infected(graph.users) == 2
+
+def test_get_num_infected_large():
+	expectedInfected = 100
+	graph = CoachingGraph()
+	graph.init_semi_random(expectedInfected)
+	infecter = Infecter()
+
+	infecter.infect_all(graph.users)
+	actualInfected = infecter.get_num_infected(graph.users)
+
+	assert actualInfected == expectedInfected
 
 def test_find_neighbor_with_fewest_connections():
 	graph = CoachingGraph()
@@ -89,3 +137,15 @@ def test_find_user_with_fewest_connections():
 	actual = infecter.find_user_with_fewest_connections(subgraph.users)
 
 	assert expected == actual
+
+def test_infect_limited_doesnt_change_num_users():
+	originalUsers = 100
+	graph = CoachingGraph()
+	graph.init_semi_random(originalUsers)
+	infecter = Infecter()
+
+	infecter.infect_limited(graph.users, 50, 10)
+	remaingingUsers = len(graph.users)
+
+	assert remaingingUsers == originalUsers
+

@@ -51,6 +51,13 @@ def test_add_coach_creates_no_extra_relationships(resource_add_coach):
 	for coachee in coachees:
 		assert len(coachee.coachees) == 0
 
+def test_init_semi_random_connected():
+	graph = CoachingGraph()
+	graph.init_semi_random_connected(200)
+	numSubgraphs = len(graphTraverser.get_subgraphs(graph.users))
+
+	assert numSubgraphs == 1
+
 def test_make_sparse_random_connections():
 	graph = CoachingGraph()
 	graph.create_and_add_users(20)
@@ -74,6 +81,14 @@ def test_add_user():
 	graph.add_user(userA)
 
 	assert userA in graph.users
+
+def test_no_user_has_self_as_neighbor():
+	graph = CoachingGraph()
+	graph.init_semi_random(100)
+	for user in graph.users:
+		if user in user.neighbors:
+			assert False
+	assert True
 
 def test_get_subgraphs():
 	graph = CoachingGraph()

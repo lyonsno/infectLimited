@@ -9,13 +9,15 @@ TEST_GRAPH_DIRECTORY_NAME = 'testData'
 TEST_GRAPH_SUFFIX = 'testGraph.pkl'
 MAX_SIZE = 600
 
-NUM_TEST_GRAPHS_QUICK = 12
+NUM_TEST_GRAPHS_QUICK = 10
 TEST_GRAPH_DIRECTORY_NAME_QUICK = 'testDataQuick'
 TEST_GRAPH_SUFFIX_QUICK = 'testGraph.pkl'
 MAX_SIZE_QUICK = 160
 
+CONNECTED_TEST_GRAPH_DIRECTORY_NAME = 'testDataConnected'
+
 def custom_single_use_test_graphs(folderName, numGraphs, maxSize):
-	generate_test_graphs(folderName, numGraphs, maxSize)
+	return generate_test_graphs(folderName, numGraphs, maxSize)
 
 	return load_test_graphs(folderName)
 
@@ -26,6 +28,14 @@ def default_persistent_test_graphs():
 			generate_test_graphs(TEST_GRAPH_DIRECTORY_NAME, expectedTestGraphs, MAX_SIZE)
 	
 	return load_test_graphs(TEST_GRAPH_DIRECTORY_NAME)
+
+def connected_persistent_test_graphs():
+	expectedTestGraphs = NUM_TEST_GRAPHS
+	if not check_resources_exist(CONNECTED_TEST_GRAPH_DIRECTORY_NAME, expectedTestGraphs):
+			logger.info("generating new test graphs")
+			generate_test_graphs_connected(CONNECTED_TEST_GRAPH_DIRECTORY_NAME, expectedTestGraphs, MAX_SIZE)
+	
+	return load_test_graphs(CONNECTED_TEST_GRAPH_DIRECTORY_NAME)
 
 def quick_persistent_test_graphs():
 	expectedTestGraphs = NUM_TEST_GRAPHS_QUICK
@@ -50,6 +60,25 @@ def load_test_graphs(folderName):
 def generate_test_graphs(dirName, numGraphs, maxSize):
 	logger.info("generating test graphs in directory: {}".format(dirName))
 	folderPath = refresh_testData_folder(dirName)
+	graphs = []
+	for i in range(numGraphs):
+		graph = CoachingGraph()
+
+		fileNumber = i + 1
+		fileName = '{}_'.format(fileNumber) + TEST_GRAPH_SUFFIX
+
+		randomSize = random.randint(100, maxSize)
+		randomInternalConnections = random.randint(2, 12)
+		randomCoacheesFactor = random.randint(2, 5)
+		graph.init_semi_random(200, randomInternalConnections, randomCoacheesFactor)
+		graphs.append(graph)
+		filePath = os.path.join(folderPath, fileName)
+		graph.save_as(filePath)
+	return graphs
+
+def generate_test_graphs_connected(dirName, numGraphs, maxSize):
+	logger.info("generating test graphs in directory: {}".format(dirName))
+	folderPath = refresh_testData_folder(dirName)
 
 	for i in range(numGraphs):
 		graph = CoachingGraph()
@@ -58,9 +87,7 @@ def generate_test_graphs(dirName, numGraphs, maxSize):
 		fileName = '{}_'.format(fileNumber) + TEST_GRAPH_SUFFIX
 
 		randomSize = random.randint(40, maxSize)
-		randomInternalConnections = random.randint(2, 12)
-		randomCoacheesFactor = random.randint(2, 5)
-		graph.init_semi_random(randomSize, randomInternalConnections, randomCoacheesFactor)
+		graph.init_semi_random_connected(randomSize)
 
 		filePath = os.path.join(folderPath, fileName)
 		graph.save_as(filePath)

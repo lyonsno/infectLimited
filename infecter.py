@@ -12,38 +12,72 @@ class Infecter():
 	def infect_single_user(self, user):
 		user.infected = True
 
+	def infect_random(self, users, numToInfect):
+		users = users[:]
+		for i in range(numToInfect):
+			user = random.choice(users)
+			user.infected = True
+			users.remove(user)
+
+	def infect_all(self, users):
+		for user in users:
+			user.infected = True
+
 	def infect_from(self, user):
 		graphTraverser.breadth_first_apply_function(user, self.infect_single_user)
 
-	def infect_limited(self, users, numUsersToInfect, acceptableErrorPercentage):
-		percentOptional = self.get_int_percentage_of(numUsersToInfect, acceptableErrorPercentage)
-		minNumToInfect = numUsersToInfect - percentOptional
-		maxNumToInfect = numUsersToInfect + percentOptional
+	def infect_limited(self, users, numUsersToInfect, acceptableErrorPercentage, debug=False):
+		numOptionalUsers = self.get_int_percentage_of(numUsersToInfect, acceptableErrorPercentage)
+		minNumToInfect = numUsersToInfect - numOptionalUsers
+		maxNumToInfect = numUsersToInfect + numOptionalUsers
 		remaining = minNumToInfect
 
 		subgraphs = graphTraverser.get_subgraphs_sorted(users)
 
 		finalSubgraph = None
 		for subgraph in subgraphs:
-			if remaining <= 0 or not subgraphs:
+			if remaining <= 0:
 				break
+			if debug:
+				logger.info("\n")
+				duds = 0
+				for u in subgraph:
+					if u not in users:
+						duds += 1
+				# noExtras = set(subgraph) in set(users)
+				# logger.info("all subgraph users in users: {}".format(noExtras))
+				logger.info("rouge users: {}".format(duds))
+				logger.info("size of subgraph: {}".format(len(subgraph)))
+				logger.info("remaining users before: {}".format(remaining))
+			# 	debugInfected = self.get_num_infected(users)
+			# 	logger.info("infected users: {}".format(debugInfected))
 
 			bestStartCandidate = self.find_user_with_fewest_connections(subgraph)
 			self.infect_limited_from(bestStartCandidate, remaining)
+
 			remaining -= self.get_num_infected(subgraph)
+			if debug:
+				logger.info("new infected users: {}".format(self.get_num_infected(subgraph)))
+				logger.info("total infected users: {}".format(self.get_num_infected(users)))
+				debugInfected = self.get_num_infected(users)
+				logger.info("remaining users after: {}".format(remaining))
+			# if debug:
+				# subgraphInfected = self.get_num_infected(subgraph)
+				# logger.info("infected subgraph users: {}".format(subgraphInfected))
+			# logger.info("remaining users: {}".format(remaining))
 			finalSubgraph = subgraph
 
-		optionalRemaining = minNumToInfect - maxNumToInfect
+		optionalRemaining = maxNumToInfect - minNumToInfect 
 		self.infect_while_improving(finalSubgraph, optionalRemaining)
 
-	def get_int_percentage_of(self, percentage, value):
+	def get_int_percentage_of(self, value, percentage):
 		return math.floor(value * (percentage / 100))
 
 	def infect_limited_from(self, user, numUsersToInfect):
 		user.epicenter = True
 		self.infect_single_user(user)
 		infectedUsers = [user]
-
+		numInfected = 1
 		while len(infectedUsers) < numUsersToInfect:
 
 			nextToInfect = None
@@ -65,7 +99,9 @@ class Infecter():
 				return
 
 			self.infect_single_user(nextToInfect)
+			numInfected += 1
 			infectedUsers.append(nextToInfect)
+			# logger.info("num infected by traversal: {}".format(numInfected))
 
 	def infect_while_improving(self, users, limit):
 		quality_level = self.get_solution_quality(users)
@@ -114,7 +150,7 @@ class Infecter():
 		cleanNeighbors = []
 		infected = [user for user in users if user.infected]
 		for user in infected:
-			cleanNeighbors.append(self.get_clean_neighbors(user))
+			cleanNeighbors.extend(self.get_clean_neighbors(user))
 		return len(cleanNeighbors)
 
 	def get_clean_neighbors(self, user):
@@ -122,9 +158,7 @@ class Infecter():
 
 	def get_num_infected(self, users):
 		numInfected = 0
-		for subgraph in graphTraverser.get_subgraphs(users):
-			someUser = subgraph.pop()
-			infected = graphTraverser.traverse_from_collect_if(someUser, lambda user: user.infected)
-			numInfected += len(infected)
-
+		for user in users:
+			if user.infected:
+				numInfected += 1
 		return numInfected
