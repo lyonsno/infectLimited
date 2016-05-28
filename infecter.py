@@ -38,33 +38,11 @@ class Infecter():
 		for subgraph in subgraphs:
 			if remaining <= 0:
 				break
-			if debug:
-				logger.info("\n")
-				duds = 0
-				for u in subgraph:
-					if u not in users:
-						duds += 1
-				# noExtras = set(subgraph) in set(users)
-				# logger.info("all subgraph users in users: {}".format(noExtras))
-				logger.info("rouge users: {}".format(duds))
-				logger.info("size of subgraph: {}".format(len(subgraph)))
-				logger.info("remaining users before: {}".format(remaining))
-			# 	debugInfected = self.get_num_infected(users)
-			# 	logger.info("infected users: {}".format(debugInfected))
 
 			bestStartCandidate = self.find_user_with_fewest_connections(subgraph)
 			self.infect_limited_from(bestStartCandidate, remaining)
 
 			remaining -= self.get_num_infected(subgraph)
-			if debug:
-				logger.info("new infected users: {}".format(self.get_num_infected(subgraph)))
-				logger.info("total infected users: {}".format(self.get_num_infected(users)))
-				debugInfected = self.get_num_infected(users)
-				logger.info("remaining users after: {}".format(remaining))
-			# if debug:
-				# subgraphInfected = self.get_num_infected(subgraph)
-				# logger.info("infected subgraph users: {}".format(subgraphInfected))
-			# logger.info("remaining users: {}".format(remaining))
 			finalSubgraph = subgraph
 
 		optionalRemaining = maxNumToInfect - minNumToInfect 
@@ -77,31 +55,29 @@ class Infecter():
 		user.epicenter = True
 		self.infect_single_user(user)
 		infectedUsers = [user]
-		numInfected = 1
 		while len(infectedUsers) < numUsersToInfect:
 
-			nextToInfect = None
-			fewestConnections = math.inf
-
-			for user in infectedUsers:
-
-				neighborWithFewest = self.find_neighbor_with_fewest_connections(user)
-				
-				# no uninfected neighbors
-				if neighborWithFewest is None:
-					continue
-
-				if neighborWithFewest.numConnections < fewestConnections:
-					fewestConnections = neighborWithFewest.numConnections
-					nextToInfect = neighborWithFewest
-
+			nextToInfect = self.find_next_to_infect(infectedUsers)
 			if nextToInfect is None:
 				return
 
 			self.infect_single_user(nextToInfect)
-			numInfected += 1
 			infectedUsers.append(nextToInfect)
-			# logger.info("num infected by traversal: {}".format(numInfected))
+
+	def find_next_to_infect(self, infectedUsers):
+		nextToInfect = None
+		fewestConnections = math.inf
+
+		for user in infectedUsers:
+
+			neighborWithFewest = self.find_neighbor_with_fewest_connections(user)
+			if neighborWithFewest is None:
+				continue
+			elif neighborWithFewest.numConnections < fewestConnections:
+				fewestConnections = neighborWithFewest.numConnections
+				nextToInfect = neighborWithFewest
+
+		return nextToInfect
 
 	def infect_while_improving(self, users, limit):
 		quality_level = self.get_solution_quality(users)

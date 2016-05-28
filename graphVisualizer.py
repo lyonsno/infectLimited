@@ -33,6 +33,7 @@ class GraphVisualizer():
 					self.visualGraph.add_edge(user, coachee, arrows=True)
 
 	def process_graph(self):
+		# add nodes to graph and set their colors
 		self.update_nodes()
 		# generate node positions
 		self.pos = nx.spring_layout(self.visualGraph, scale=1, k=0.025, iterations=40)
