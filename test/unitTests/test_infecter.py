@@ -15,6 +15,15 @@ def resource_semi_random_graph_users():
 
 	return graph.users
 
+
+def test_infect_limited_no_errors(resource_semi_random_graph_users):
+	users = resource_semi_random_graph_users
+	infecter = Infecter()
+	
+	infecter.infect_limited(users, 25, 0)
+
+	assert True
+
 def test_infect_limited_from():
 	graph = CoachingGraph()
 	graph.init_semi_random_connected(200)
