@@ -97,7 +97,7 @@ class CoachingGraph():
 
 	def draw(self):
 		self.visualizer.update(self.users)
-		self.visualizer.draw()
+		self.visualizer.draw(self.infecter.get_solution_quality(self.users))
 
 	def save_as(self, filename):
 		self.visualizer.update(self.users)

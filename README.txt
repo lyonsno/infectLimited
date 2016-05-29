@@ -4,7 +4,7 @@ After the environment is set up, tests can be run as follows:
 
 to run unit tests, run the command python3 -m pytest ./test/unitTests/
 
-to evaluate the efficacy of the solution, run the command python3 -m pytest ./test/evaluateSolutionQuality.  
+to evaluate the efficacy of the solution, run the command python3 -m pytest --tb=short ./test/evaluateSolutionQuality.  
 This test will run the algorithm multiple times on a persistent set of twenty randomly generated graphs designed to model connections between learners and coaches.  Some of the graphs in test_infect_limted.py contain subsets of disconnected graphs.  Graphs in test_infect_limited.py are all completely connected.  Graphs in test_infect_limited_quick.py are smaller and fewer test iterations are run, so solutions are less accurate but the tests run more quickly.
 
 to visualize the performance of the algorithm, run the command python3 -m pytest ./test/visualize/

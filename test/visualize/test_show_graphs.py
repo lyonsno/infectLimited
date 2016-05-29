@@ -13,7 +13,7 @@ def resource_sample_test_graphs():
 # @pytest.mark.skip(reason='only for debug')
 def test_show_sample_infect_limited_graphs(resource_sample_test_graphs):
 	for graph in resource_sample_test_graphs:
-		infecter = Infecter()
-		infecter.infect_limited(graph.users, 30, 10)
+		# infecter = Infecter()
+		graph.infecter.infect_limited(graph.users, 30, 10)
 		graph.draw()
 	assert True
